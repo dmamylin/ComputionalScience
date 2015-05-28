@@ -1,0 +1,162 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{listings}
+\usepackage{geometry}
+ \geometry{
+ a4paper,
+ total={210mm,297mm},
+ left=7mm,
+ right=7mm,
+ top=8mm,
+ bottom=8mm,
+ }
+
+\topmargin=-1.5cm
+\parindent=24pt
+\parskip=0pt
+\flushbottom
+\lstset{language=C}
+
+\title{Расчетно-графическая работа №1}
+\author{Мамылин Дмитрий, МТ-301}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+
+\newpage
+\thispagestyle{empty}
+
+    \section*{Постановка задачи}
+        Дан интеграл $\int_2^3 \! e^{-\cos(x)} \, \mathrm{d}x$.
+        Необходимо вычислить значение интеграла по двум составным формулам:
+        по формуле средних прямоугольников и формуле Грегори с шагом
+        $0.1, 0.05, 0.025$, оценить погрешность по Рунге и вычислить
+        значение, используя формуле Гаусса (по двум узлам). \\
+        
+    \section*{Формула средних прямоугольников}
+        \begin{itemize}
+            \item Шаг $h = 0.1$:\\
+                $n = \frac{3 - 2}{0.1} = 10 $;
+                $x_{i} = 2 + i \cdot h = 2 + i \cdot 0.1,$ где $i = 0, \cdots, 10$\\
+                $\int_2^3 \! e^{-\cos(x)} \, \mathrm{d}x \approx I_{h} = \sum_{k=0}^{9} (3 - 2)
+                \cdot (x_{i+1} - x_{i}) \cdot e^{\frac{x_{i+1} + x_{i}}{2}} =
+                \sum_{k=0}^{9} (x_{i+1} - x_{i}) \cdot e^{\frac{x_{i+1} + x_{i}}{2}}
+                \approx 2.18713$.
+                
+            \item Шаг $h = 0.05$:\\
+                $n = \frac{3 - 2}{0.05} = 20 $;
+                $x_{i} = 2 + i \cdot h = 2 + i \cdot 0.05,$ где $i = 0, \cdots, 20$\\
+                $\int_2^3 \! e^{-\cos(x)} \, \mathrm{d}x \approx I_{\frac{h}{2}} =
+                \sum_{k=0}^{19} (3 - 2) \cdot (x_{i+1} - x_{i}) \cdot e^{\frac{x_{i+1} + x_{i}}{2}} =
+                \sum_{k=0}^{19} (x_{i+1} - x_{i}) \cdot e^{\frac{x_{i+1} + x_{i}}{2}}
+                \approx 2.18681$.
+                
+            \item Шаг $h = 0.025$:\\
+                $n = \frac{3 - 2}{0.05} = 40 $;
+                $x_{i} = 2 + i \cdot h = 2 + i \cdot 0.025,$ где $i = 0, \cdots, 40$\\
+                $\int_2^3 \! e^{-\cos(x)} \, \mathrm{d}x \approx I_{\frac{h}{4}} =
+                \sum_{k=0}^{39} (3 - 2) \cdot (x_{i+1} - x_{i}) \cdot e^{\frac{x_{i+1} + x_{i}}{2}} =
+                \sum_{k=0}^{39} (x_{i+1} - x_{i}) \cdot e^{\frac{x_{i+1} + x_{i}}{2}}
+                \approx 2.18674$.
+                
+            \item Погрешность:\\
+                $R_{h} \sim 2 = m;$ применим метод Рунге для оценки погрешностей:\\
+                $R_{\frac{h}{2}} \approx \frac{I_{\frac{h}{2}} - I_{h}}{2^{m} - 1} =
+                \frac{2.18681 - 2.18713}{2^2 - 1} = \frac{-0.00032}{3} \approx -1.1 \cdot 10^{-4}$\\
+                $R_{\frac{h}{4}} \approx \frac{I_{\frac{h}{4}} - I_{\frac{h}{2}}}{2^{m} - 1} =
+                \frac{2.18674 - 2.18681}{2^2 - 1} = \frac{-0.00032}{3} \approx -2.3 \cdot 10^{-5}$
+        \end{itemize}
+        
+    \section*{Формула Грегори}
+        \begin{itemize}
+            \item Шаг $h = 0.1$:\\
+                $\int_2^3 \! e^{-\cos(x)} \, \mathrm{d}x \approx I_{h} = 
+                \frac{5 \cdot h}{12} \cdot (e^{-\cos(2)} + e^{-\cos(3)}) + h \cdot
+                \sum_{k=1}^{9} e^{-\cos(x_{k})} + \frac{h}{12} \cdot
+                (e^{-\cos(x_{1})} + e^{-\cos(x_{9})}) \approx 2.18663$.
+                
+            \item Шаг $h = 0.05$:\\
+                $\int_2^3 \! e^{-\cos(x)} \, \mathrm{d}x \approx I_{h} = 
+                \frac{5 \cdot h}{12} \cdot (e^{-\cos(2)} + e^{-\cos(3)}) + h \cdot
+                \sum_{k=1}^{19} e^{-\cos(x_{k})} + \frac{h}{12} \cdot
+                (e^{-\cos(x_{1})} + e^{-\cos(x_{19})}) \approx 2.18670$.
+                
+            \item Шаг $h = 0.025$:\\
+                $\int_2^3 \! e^{-\cos(x)} \, \mathrm{d}x \approx I_{h} = 
+                \frac{5 \cdot h}{12} \cdot (e^{-\cos(2)} + e^{-\cos(3)}) + h \cdot
+                \sum_{k=1}^{39} e^{-\cos(x_{k})} + \frac{h}{12} \cdot
+                (e^{-\cos(x_{1})} + e^{-\cos(x_{39})}) \approx 2.18671$.
+                
+            \item Погрешность:\\
+                $R_{h} \sim 3 = m;$ применим метод Рунге для оценки погрешностей:\\
+                $R_{\frac{h}{2}} \approx \frac{I_{\frac{h}{2}} - I_{h}}{2^{m} - 1} =
+                \frac{2.18670 - 2.18663}{2^3 - 1} = \frac{0.00007}{7} \approx 1 \cdot 10^{-4}$\\
+                $R_{\frac{h}{4}} \approx \frac{I_{\frac{h}{4}} - I_{\frac{h}{2}}}{2^{m} - 1} =
+                \frac{2.18671 - 2.18670}{2^3 - 1} = \frac{0.00001}{7} \approx 1.4 \cdot 10^{-6}$
+        \end{itemize}
+        
+    \section*{Формула Гаусса}
+        Используем оптимальные узлы и веса на отрезке $[-1, 1]: x_{1, 2} = \pm \sqrt{\frac{1}{3}},
+        w_{1, 2} = 1$.\\
+        Сведем исходный интеграл по промежутку $[2, 3]$ к интегралу по промежутку $[-1, 1]$:\\
+        $\int_2^3 \! e^{-\cos(x)} \, \mathrm{d}x = \frac{1}{2} \cdot
+        \int_{-1}^{1} \! e^{-\cos(0.5 \cdot z + 2.5)} \, \mathrm{d}z \approx
+        0.5 \cdot (e^{-\cos(0.5 \cdot \sqrt{\frac{1}{3}} + 2.5)} + e^{-\cos(0.5 \cdot
+        (-\sqrt{\frac{1}{3}}) + 2.5)}) \approx 2.186797$
+    
+\newpage    
+    
+    \section*{Вывод}
+        Метод Рунге позволяет оценивать погрешности по ходу вычислений, причем для 
+        методов большего порядка точность будет выше, чем для методов меньшего.
+    
+    \section*{Приложение}
+        \begin{lstlisting}
+#include <stdio.h>
+#include <math.h>
+
+const double A = 2.0;
+const double B = 3.0;
+const double STEPS[] = { 0.1, 0.05, 0.025 };
+
+double f(double x) {
+    return exp(-cos(x));
+}
+
+double midRectangles(double a, double b, double h) {
+    double result = 0.0;
+    int i;
+    int n = (int)floor((b - a) / h);
+
+    for (i = 0; i < n; i++) {
+        double xPrev = a + i * h;
+        double xNext = a + (i + 1) * h;
+        double middlePoint = (xPrev + xNext) / 2.0;
+
+        result += f(middlePoint);
+    }
+
+    return result * h;
+}
+
+double gregory(double a, double b, double h) {
+    double x1 = a + h;
+    double xn_1 = b - h;
+    double result = 0.0;
+    int i;
+    int n = (int)floor((b - a) / h);
+
+    result += (5 * (f(a) + f(b)) + f(x1) + f(xn_1)) / 12.0;
+    
+    for (i = 1; i < n; i++) {
+        result += f(a + i * h);
+    }
+
+    return result * h;
+}
+        \end{lstlisting}
+        
+\end{document}

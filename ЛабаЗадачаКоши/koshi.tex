@@ -1,0 +1,171 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{listings}
+\usepackage{geometry}
+\usepackage{graphicx}
+ \geometry{
+ a4paper,
+ total={210mm,297mm},
+ left=5mm,
+ right=5mm,
+ top=5mm,
+ bottom=5mm,
+ }
+
+%\topmargin=-1.5cm
+%\parindent=24pt
+%\parskip=0pt
+%\flushbottom
+\lstset{language=python}
+
+\title{Расчетно-графическая работа №2}
+\author{Мамылин Дмитрий, МТ-301}
+
+\begin{document}
+
+\DeclareGraphicsExtensions{.png}
+
+\maketitle
+\thispagestyle{empty}
+
+\newpage
+\thispagestyle{empty}
+
+    \section*{Постановка задачи}
+        Дана задача Коши:\\
+        \begin{center}
+            $y' = \frac{3}{2}\cdot\sqrt{x}$\\
+            $y(0) = -1$
+        \end{center}\smallskip
+        Будем решать задачу на отрезке $[0, 1]$. Зафиксируем на этом отрезке
+        равномерную сетку $\{x_{i}\}_{i=0}^{n}$ с шагом $h$, где $x_{0} = 0, x_{1} = 1$.\\
+        Задачу необходимо решить явным методом Эйлера, неявным методом Эйлера и
+        явным двушаговым методом Адамса.\\
+        Точное решение: $y(x) = x^{\frac{3}{2}} - 1$\\
+        \includegraphics[scale=0.5]{exactSolutionGraph}
+        
+    \section*{Решение явным методом Эйлера}
+        Формула: $y_{i+1} = y_{i} + h \cdot \frac{3}{2}\cdot\sqrt{x_{i}}$, где $h$ - шаг.\\*
+
+        \noindent
+        Явный метод Эйлера имеет порядок точности $O(h)$, поэтому для решения
+        нелинейного уравнения: $z^{2} - x_{i} = 0$ можно применить метод Ньютона,
+        порядок точности которого $O(h^{2})$.\\*
+        $f_{i}(z) = z^{2} - x_{i}$\\*
+        $f'_{i}(z) = f'(z) = 2z$\\*
+        Тогда метод примет вид: $z_{j+1} = z_{j} - \frac{f_{i}(z_{j})}{f'(z_{j})} =
+        z_{j} - \frac{z_{j}^{2} - x_{i}}{2z_{j}}$\\*
+        Выберем начальную точку:\\*
+        $f''_{i}(z) = f''(z) = 2 > 0$\\*
+        То есть, надо выбирать $z_{0}$ так, чтобы выполнялось: $f_{i}(z_{0}) > 0$.\\*
+        Поскольку $x_{i} \leq 1 \forall i$, то можно взять $z_{0} = 1.1$, тогда:
+        $f_{i}(x) > 0 \forall x \in [0, 1]$, что гарантирует сходимость.
+        \includegraphics[scale=0.45]{explicitEulerGraph_Step=1}
+        \includegraphics[scale=0.45]{explicitEulerGraph_Step=0_5}\\
+        \includegraphics[scale=0.45]{explicitEulerGraph_Step=0_05}
+        
+    \section*{Решение неявным методом Эйлера}
+        Формула: $y_{i+1} = y_{i} + h \cdot f_{i+1} = y_{i} + h \cdot \frac{3}{2} \cdot
+        \sqrt{x_{i+1}}$, где $h$ - шаг.\\
+        
+        \noindent
+        Аналогично явному методу Эйлера, неявный метод имеет порядок точности
+        $O(h)$, поэтому для решения нелинейного уравнения: $z^{2} - x_{i+1} = 0$
+        можно применить метод Ньютона.\\
+        В остальном рассуждения полностью повторяют предыдущий пункт.\\
+        \includegraphics[scale=0.45]{implicitEulerGraph_Step=0_5}
+        \includegraphics[scale=0.45]{implicitEulerGraph_Step=0_05}
+        
+    \section*{Решение явным двушаговым методом Адамса}
+        Выведем формулу:\\
+        Интегральное представление точного решения:
+        $y_{i+1} = y_{i} + \int_{x_{i}}^{x{i+1}} \! L_{k-1}(s) \, \mathrm{d}s$.\\
+        Запишем многочлен Лагранжа $L_{k-1}(x) = [$при $k = 2] = L_{1}(x)$
+        в форме Ньютона:\\
+        $L_{1}(x) = f_{i} + f(x_{i}, x_{i-1})(x - x_{i}) = f_{i} +
+        \frac{f_{i} - f{i-1}}{h}(x - x_{i})$.\\
+        Подставим в интегральное представление. После интегрирования и
+        приведения подобных получим формулу:
+        $y_{i+1} = y_{i} + \frac{h}{2} (3f_{i} - f_{i-1}) = y_{i} +
+        \frac{h}{2}(\frac{9}{2}\sqrt{x_{i}} - \frac{3}{2}\sqrt{x_{i-1}})$,
+        где $i = 1, 2, .., n-1$.\\
+        Будем проводить разгон методом Рунге-Кутты третьего порядка.\\
+        $y_{1} = y_{0} + \frac{1}{6} k_{1} + \frac{1}{6} k_{2} + \frac{4}{6} k_{3}$.
+        Где:\\
+        $k_{1} = hf(x_{0}, y_{0}) = h \cdot \frac{3}{2} \sqrt{x_{0}} = 0$\\
+        $k_{2} = hf(x_{0} + h, y_{0} + k_{1}) = hf(h, y_{0}) = h \cdot \frac{3}{2} \sqrt{h}$\\
+        $k_{3} = hf(x_{0} + \frac{h}{2}, y_{0} + \frac{1}{4}k_{1} + \frac{1}{4}k_{2}) =
+        hf(\frac{h}{2}, -1 + \frac{1}{4}k_{2}) = h \cdot \frac{3}{2} \sqrt{\frac{h}{2}}$\\
+        То есть: $y_{1} = -1 + \frac{3h}{12}(\sqrt{h} + 4\sqrt{\frac{h}{2}}) =
+        \frac{3h}{12}\sqrt{h}(1 + 4\sqrt{0.5}) - 1$.\\
+        \includegraphics[scale=0.45]{adamsGraph_Step=0_5}
+        \includegraphics[scale=0.45]{adamsGraph_Step=0_25}\\
+        \includegraphics[scale=0.45]{adamsGraph_Step=0_05}
+        
+    \section*{Вывод}
+        На данном примере методы Эйлера почти полностью повторяют друг друга,
+        в то время как метод Адамса сходится быстрее, поскольку он является
+        многошаговым, то есть при пересчете следующих значений учитываются предыдущие
+        шаги.
+    \newpage
+    
+    \section*{Приложение}
+        \begin{lstlisting}
+import math
+import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
+from matplotlib.patches import Rectangle
+import pylab
+
+H = 0.5
+
+def f(z, xi):
+    return z**2 - xi
+    
+def f_1(z):
+    return 2.0 * z
+
+def newton(xi, z0, precision):
+    z = z0
+    while True:
+        zprev = z
+        z -= f(z, xi) / f_1(z)
+        if abs(z - zprev) < precision:
+            break
+    return z
+
+def explicitEuler(y0, grid):
+    PRECISION = 0.0001
+    Z = 1.1
+    h = grid[1] - grid[0]
+    result = [(grid[0], y0)]
+    for i in range(len(grid)):
+        yNext = result[i][1] + h * newton(grid[i], Z, PRECISION)
+        result.append((grid[i], yNext))
+    return result
+
+def implicitEuler(y0, grid):
+    PRECISION = 0.0001
+    Z = 1.1
+    h = grid[1] - grid[0]
+    result = [(grid[0], y0)]
+    for i in range(1, len(grid)):
+        yNext = result[i-1][1] + h * newton(grid[i], Z, PRECISION)
+        result.append((grid[i], yNext))
+    return result
+
+def twoStepAdams(y0, grid):
+    PRECISION = 0.0001
+    Z = 1.1
+    y1 = (3*H / 12)*math.sqrt(H)*(1 + 4*math.sqrt(0.5)) - 1
+    result = [(grid[0], y0), (grid[1], y1)]
+    for i in range(2, len(grid)):
+        yNext = result[i-1][1] + (H/2)*(newton(grid[i-1], Z, PRECISION)*9.0/2.0 -
+                                        newton(grid[i-2], Z, PRECISION)*3.0/2.0)
+        result.append((grid[i], yNext))
+    return result
+        \end{lstlisting}
+        
+        
+\end{document}

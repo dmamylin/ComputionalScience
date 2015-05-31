@@ -33,7 +33,7 @@
 \thispagestyle{empty}
 
     \section*{Постановка задачи}
-        Дана задача Коши:\\
+        Дана задача Коши:\\*
         \begin{center}
             $y' = \frac{3}{2}\cdot\sqrt{x}$\\
             $y(0) = -1$
@@ -46,37 +46,26 @@
         \includegraphics[scale=0.5]{exactSolutionGraph}
         
     \section*{Решение явным методом Эйлера}
-        Формула: $y_{i+1} = y_{i} + h \cdot \frac{3}{2}\cdot\sqrt{x_{i}}$, где $h$ - шаг.\\*
+    	Общий вид: $y_{i+1} = y_{i} + h \cdot f(x_{i}, y_{i})$, где $h$ - шаг.\\
+        Формула: $y_{i+1} = y_{i} + h \cdot \frac{3}{2}\cdot\sqrt{x_{i}}$.\\*
 
-        \noindent
-        Явный метод Эйлера имеет порядок точности $O(h)$, поэтому для решения
-        нелинейного уравнения: $z^{2} - x_{i} = 0$ можно применить метод Ньютона,
-        порядок точности которого $O(h^{2})$.\\*
-        $f_{i}(z) = z^{2} - x_{i}$\\*
-        $f'_{i}(z) = f'(z) = 2z$\\*
-        Тогда метод примет вид: $z_{j+1} = z_{j} - \frac{f_{i}(z_{j})}{f'(z_{j})} =
-        z_{j} - \frac{z_{j}^{2} - x_{i}}{2z_{j}}$\\*
-        Выберем начальную точку:\\*
-        $f''_{i}(z) = f''(z) = 2 > 0$\\*
-        То есть, надо выбирать $z_{0}$ так, чтобы выполнялось: $f_{i}(z_{0}) > 0$.\\*
-        Поскольку $x_{i} \leq 1 \forall i$, то можно взять $z_{0} = 1.1$, тогда:
-        $f_{i}(x) > 0 \forall x \in [0, 1]$, что гарантирует сходимость.
-        \includegraphics[scale=0.45]{explicitEulerGraph_Step=1}
-        \includegraphics[scale=0.45]{explicitEulerGraph_Step=0_5}\\
+		\noindent
+        \includegraphics[scale=0.45]{explicitEulerGraph_Step=0_5}
+        \includegraphics[scale=0.45]{explicitEulerGraph_Step=0_25}\\
+        \includegraphics[scale=0.45]{explicitEulerGraph_Step=0_125}
         \includegraphics[scale=0.45]{explicitEulerGraph_Step=0_05}
         
     \section*{Решение неявным методом Эйлера}
-        Формула: $y_{i+1} = y_{i} + h \cdot f_{i+1} = y_{i} + h \cdot \frac{3}{2} \cdot
-        \sqrt{x_{i+1}}$, где $h$ - шаг.\\
+    	Общий вид: $y_{i+1} = y_{i} + h \cdot f(x_{i+1}, y_{i+1})$.\\
+        Формула: $y_{i+1} = y_{i} + h \cdot \frac{3}{2} \cdot \sqrt{x_{i+1}}$.\\
         
-        \noindent
-        Аналогично явному методу Эйлера, неявный метод имеет порядок точности
-        $O(h)$, поэтому для решения нелинейного уравнения: $z^{2} - x_{i+1} = 0$
-        можно применить метод Ньютона.\\
-        В остальном рассуждения полностью повторяют предыдущий пункт.\\
+		\noindent
         \includegraphics[scale=0.45]{implicitEulerGraph_Step=0_5}
+        \includegraphics[scale=0.45]{implicitEulerGraph_Step=0_25}\\
+        \includegraphics[scale=0.45]{implicitEulerGraph_Step=0_125}
         \includegraphics[scale=0.45]{implicitEulerGraph_Step=0_05}
         
+    \newpage
     \section*{Решение явным двушаговым методом Адамса}
         Выведем формулу:\\
         Интегральное представление точного решения:
@@ -101,6 +90,7 @@
         \frac{3h}{12}\sqrt{h}(1 + 4\sqrt{0.5}) - 1$.\\
         \includegraphics[scale=0.45]{adamsGraph_Step=0_5}
         \includegraphics[scale=0.45]{adamsGraph_Step=0_25}\\
+        \includegraphics[scale=0.45]{adamsGraph_Step=0_125}
         \includegraphics[scale=0.45]{adamsGraph_Step=0_05}
         
     \section*{Вывод}
@@ -112,58 +102,39 @@
     
     \section*{Приложение}
         \begin{lstlisting}
-import math
-import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
-from matplotlib.patches import Rectangle
-import pylab
-
-H = 0.5
-
-def f(z, xi):
-    return z**2 - xi
-    
-def f_1(z):
-    return 2.0 * z
-
-def newton(xi, z0, precision):
-    z = z0
-    while True:
-        zprev = z
-        z -= f(z, xi) / f_1(z)
-        if abs(z - zprev) < precision:
-            break
-    return z
-
-def explicitEuler(y0, grid):
-    PRECISION = 0.0001
-    Z = 1.1
+def explicit_euler(y0, grid):
+    grid_size = len(grid)
+    assert (grid_size >= 2)
     h = grid[1] - grid[0]
     result = [(grid[0], y0)]
-    for i in range(len(grid)):
-        yNext = result[i][1] + h * newton(grid[i], Z, PRECISION)
-        result.append((grid[i], yNext))
+    for i in range(grid_size - 1):
+        (xi, yi) = result[i]
+        yi1 = yi + h * 1.5 * math.sqrt(xi)
+        result.append((grid[i + 1], yi1))
     return result
 
-def implicitEuler(y0, grid):
-    PRECISION = 0.0001
-    Z = 1.1
+
+def implicit_euler(y0, grid):
+    grid_size = len(grid)
+    assert (grid_size >= 2)
     h = grid[1] - grid[0]
     result = [(grid[0], y0)]
-    for i in range(1, len(grid)):
-        yNext = result[i-1][1] + h * newton(grid[i], Z, PRECISION)
-        result.append((grid[i], yNext))
+    for i in range(grid_size - 1):
+        yi = result[i][1]
+        xi1 = grid[i + 1]
+        yi1 = yi + h * 1.5 * math.sqrt(xi1)
+        result.append((xi1, yi1))
     return result
 
-def twoStepAdams(y0, grid):
-    PRECISION = 0.0001
-    Z = 1.1
-    y1 = (3*H / 12)*math.sqrt(H)*(1 + 4*math.sqrt(0.5)) - 1
+
+def two_step_adams(y0, grid):
+    y1 = (3 * H / 12) * math.sqrt(H) * (1 + 4 * math.sqrt(0.5)) - 1
     result = [(grid[0], y0), (grid[1], y1)]
     for i in range(2, len(grid)):
-        yNext = result[i-1][1] + (H/2)*(newton(grid[i-1], Z, PRECISION)*9.0/2.0 -
-                                        newton(grid[i-2], Z, PRECISION)*3.0/2.0)
-        result.append((grid[i], yNext))
+        y_next = result[i - 1][1] + (H / 2) * 
+	        (math.sqrt(grid[i - 1]) * 9.0 / 2.0 -
+         	 math.sqrt(grid[i - 2]) * 3.0 / 2.0)
+        result.append((grid[i], y_next))
     return result
         \end{lstlisting}
         
